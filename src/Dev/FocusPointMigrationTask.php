@@ -9,6 +9,8 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\PolyExecution\PolyOutput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +24,7 @@ class FocusPointMigrationTask extends MigrationTask
 
     protected function execute(InputInterface $input, PolyOutput $output): int
     {
+        $request = Injector::inst()->get(HTTPRequest::class);
         if ($request && $request->getVar('direction') == 'down') {
             $this->down();
             return Command::SUCCESS;

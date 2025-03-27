@@ -6,21 +6,26 @@ use SilverStripe\Dev\BuildTask;
 use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
 class HydrateFocusPointTask extends BuildTask
 {
-    private static $segment = 'HydrateFocusPointTask';
+    protected static string $commandName  = 'HydrateFocusPointTask';
 
-    protected $title = 'Hydrate the focuspoint extension image size cache';
+    protected string $title = 'Hydrate the focuspoint extension image size cache';
 
-    protected $description = 'Run this task to cache all image sizes, and speed up image generation';
+    protected static string $description = 'Run this task to cache all image sizes, and speed up image generation';
 
     /**
      * @param HTTPRequest $request
      * @throws ValidationException
      */
-    public function run($request)
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
+        $request = Injector::inst()->get(HTTPRequest::class);
         // Get all images missing a width / height
         $images = Versioned::get_by_stage(Image::class, Versioned::DRAFT)->filterAny([
             'FocusPointWidth'  => 0,
@@ -42,5 +47,6 @@ class HydrateFocusPointTask extends BuildTask
                 $image->publishSingle();
             }
         }
+        return Command::SUCCESS;
     }
 }
