@@ -9,19 +9,25 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
 use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+
 
 class FocusPointMigrationTask extends MigrationTask
 {
-    private static $segment = 'FocusPointMigrationTask';
-    protected $title = 'Migrate Focus-Point Field-Values.';
-    protected $description = 'Migrate Focus-Point fields from v2 to v3 or vice-versa.';
+    protected static string $commandName = 'FocusPointMigrationTask';
+    protected string $title = 'Migrate Focus-Point Field-Values.';
+    protected static string $description = 'Migrate Focus-Point fields from v2 to v3 or vice-versa.';
 
-    public function run($request)
+    protected function execute(InputInterface $input, PolyOutput $output): int
     {
         if ($request && $request->getVar('direction') == 'down') {
             $this->down();
+            return Command::SUCCESS;
         } else {
             parent::run($request);
+            return Command::SUCCESS;
         }
     }
 
